@@ -1,0 +1,19 @@
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tenniscareer"
+version = "0.1.0"
+description = "A Python package for visualizing tennis players' career matches"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pandas>=2.0",
+    "matplotlib>=3.7",
+    "requests>=2.28"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
