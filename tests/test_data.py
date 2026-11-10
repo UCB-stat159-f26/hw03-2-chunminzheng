@@ -67,3 +67,45 @@ def test_male_opponent_age():
 
     assert df.loc[0, "opponent"] == "Guillermo Platel"
     assert df.loc[0, "opponent_age"] == pytest.approx(22.2642)
+
+def test_female_missing_opponent_age():
+    df = pd.DataFrame({
+        "date": pd.to_datetime(["1995-10-30", "1997-03-07"]),
+        "opponent_age_raw": ["19770119", ""]
+    })
+
+    result = _add_opponent_age(df, "female")
+
+    assert result["opponent_age"].notna().iloc[0]
+    assert pd.isna(result["opponent_age"].iloc[1])
+
+def test_male_missing_opponent_age():
+    df = pd.DataFrame({
+        "date": pd.to_datetime(["2001-09-10", "2001-09-17"]),
+        "opponent_age_raw": ["22.264202601", ""]
+    })
+
+    result = _add_opponent_age(df, "male")
+
+    assert result["opponent_age"].iloc[0] == pytest.approx(22.2642)
+    assert pd.isna(result["opponent_age"].iloc[1])
+
+def test_detect_gender_with_missing_values():
+    female_df = pd.DataFrame({
+        "opponent_age_raw": ["", "19770119", "19700503"]
+    })
+
+    male_df = pd.DataFrame({
+        "opponent_age_raw": ["", "22.264202601", "24.2902121834"]
+    })
+
+    assert _detect_gender(female_df) == "female"
+    assert _detect_gender(male_df) == "male"
+
+def test_detect_gender_all_missing():
+    df = pd.DataFrame({
+        "opponent_age_raw": ["", None, ""]
+    })
+
+    with pytest.raises(ValueError, match="Cannot determine"):
+        _detect_gender(df)
